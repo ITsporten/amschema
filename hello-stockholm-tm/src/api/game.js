@@ -54,7 +54,7 @@ export function convertMinutesToDate(minutes){
     mString = "0" + minute.toString();
   }
 
-  return hString + ":" + mString + " - " + day.toString() + " Feb";
+  return hString + ":" + mString + " - " + day.toString() + " Maj";
 }
 
 async function advanceTeams(game){

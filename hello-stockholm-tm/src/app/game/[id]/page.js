@@ -61,10 +61,10 @@ export default function Home({params}) {
         if(game){
             dateTimeConverter(game.DateTime);
             if(game.Division === 0){
-                setDivision("Open");
+                setDivision("ÅM");
             }
             if(game.Division === 1){
-                setDivision("Women");
+                setDivision("ÅM");
             }
             if(game.Type === 1){
                 let wid = "";
@@ -93,7 +93,7 @@ export default function Home({params}) {
                 <h1 className={styles.TimeText}>{time}</h1>
             </div>
             <div className={styles.gameDayContainer}>
-                <h4 className={styles.gameDayText}>{day} Feb</h4>
+                <h4 className={styles.gameDayText}>{day} Maj</h4>
             </div>
             <div className={styles.timeContainer}>
                 <TeamLeft 
@@ -112,7 +112,7 @@ export default function Home({params}) {
             </div>
             { winnerGame &&
                 <div className={styles.advContainer}>
-                    <div className={styles.advText}>Winner advances to: </div>
+                    <div className={styles.advText}>Vinnare går till: </div>
                     <Link href={'/game/' + winnerGame.id}>
                         <div className={styles.advGame} >
                             <h4>{winnerGame.GameName}</h4>
@@ -122,7 +122,7 @@ export default function Home({params}) {
             }
             { lgameOrGroup === 1 &&
                 <div className={styles.advContainer}>
-                    <div className={styles.advText}>Loser advances to: </div>
+                    <div className={styles.advText}>Förlorare går till: </div>
                     <Link href={'/game/' + loserGame.id}>
                         <div className={styles.advGame} >
                             <h4 >{loserGame.GameName}</h4>
@@ -132,7 +132,7 @@ export default function Home({params}) {
             }
             { lgameOrGroup === 2 &&
                 <div className={styles.advContainer}>
-                    <div className={styles.advText}>Loser advances to: </div>
+                    <div className={styles.advText}>Förlorare går till: </div>
                     <Link href={'/group/' + loserGame.id}>
                         <div className={styles.advGame} >
                             <h4 >{loserGame.Name}</h4>

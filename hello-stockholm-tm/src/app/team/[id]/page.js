@@ -100,7 +100,7 @@ export default function Home({params}) {
             <h1 className={styles.text}>Games</h1>
             {  gLive &&
                     <div className={styles.container}>
-                        <h4 className={styles.textStatus}>Live</h4>
+                        <h4 className={styles.textStatus}>Spelas nu</h4>
                         {gLive.map((game) => 
                             <GameListItem key={game.id} game={game} clickable={true}/>)
                         }
@@ -109,7 +109,7 @@ export default function Home({params}) {
             
             {  gUp &&
                     <div className={styles.container}>
-                        <h4 className={styles.textStatus}>Upcoming</h4>
+                        <h4 className={styles.textStatus}>Framtida</h4>
                         {gUp.map((game) => 
                             <GameListItem key={game.id} game={game} clickable={true}/>)
                         }
@@ -118,7 +118,7 @@ export default function Home({params}) {
             
             {  gPrev &&
                     <div className={styles.container}>
-                        <h4 className={styles.textStatus}>Finished</h4>
+                        <h4 className={styles.textStatus}>Färdig</h4>
                         {gPrev.map((game) => 
                             <GameListItem key={game.id} game={game} clickable={true}/>)
                         }

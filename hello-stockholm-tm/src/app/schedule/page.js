@@ -98,26 +98,12 @@ export default function Home() {
   
   return (
     <main className={styles.main}>
-      <div className={styles.center} style={{paddingBottom: "20px"}}>
-        <iframe width="360" 
-        height="200" 
-        src="https://www.youtube.com/embed/videoseries?si=1j456eLMElDHX2KC&amp;list=PLl4jul1hSIE61QYOGNs_6hJk-xWinTqaB" 
-        title="YouTube video player" 
-        frameborder="0" 
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; allowfullscreen">
-          
-        </iframe>
-
-      </div>
-      <div className={styles.center}>
-        <TextButton prompt={"OPEN"} handlePress={handleOpenButtonPress} active={openWomen}/>
-        <TextButton prompt={"WOMEN"} handlePress={handleWomenButtonPress} active={!openWomen}/>
-      </div>
+      
       <div className={styles.gameListContainer}>
         <select className={styles.filter} value={filter} onChange={e => setFilter(e.target.value)}>
-          <option value="Upcoming">Upcoming games</option>
-          <option value="Live">Live games</option>
-          <option value="Previous">Previous games</option>
+          <option value="Upcoming">Framtida matcher</option>
+          <option value="Live">Spelas nu</option>
+          <option value="Previous">Färdiga matcher</option>
         </select>
         { openWomen && filter === "Upcoming"
             ? openGamesUpcoming.map((game) => <GameListItem key={game.id} game={game} clickable={true}/>)
