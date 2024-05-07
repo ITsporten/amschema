@@ -1,0 +1,353 @@
+.main {
+    background-color: #00cc8c;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    min-height: 100vh;
+}
+  
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 0rem 0;
+}
+
+.gameContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.gameContainer:hover {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.gameBottomContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.gameTopItem {
+    width: 350px;
+    background-color: #149CE9;
+    border-top-left-radius: 10px;
+    padding: 2%;
+    text-align: center;
+    border-bottom: solid;
+    border-bottom-width: thin;
+    border-bottom-color: #1687c8;
+}
+
+.gameRightTopItem { 
+    width: 135px;
+    background-color: #44baff;
+    border-top-right-radius: 10px;
+    padding: 6%;
+}
+
+.gameBottomLeftItem {
+    width: 150px;
+    margin-bottom: 20px;
+    background-color: #149CE9;
+    border-bottom-left-radius: 10px;
+    padding: 12px;
+    display: flex;
+    position: relative;
+}
+
+.gameBottomRightItem {
+    width: 100px;
+    margin-bottom: 20px;
+    background-color: #149CE9;
+    padding: 12px;
+    text-align: right;
+}
+
+.gameRightBottomItem {
+    width: 135px;
+    margin-bottom: 13%;
+    border-bottom-right-radius: 10px;
+    background-color: #44baff;
+    padding: 6%;
+    text-align: right;
+}
+
+.gameListContainer {
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin-top: 2%;
+}
+
+.filter {
+    margin-bottom: 5%;
+}
+
+.textLeft {
+    float: left;
+    color: white;
+}
+
+.textRight {
+    float: right;
+    color: rgb(255, 255, 255);
+}
+
+.textTopLeft {
+    float: left;
+    color: white;
+}
+
+.textTopRight {
+    float: right;
+    color: rgb(255, 255, 255);
+}
+
+.textCenter {
+    color: white;
+}
+
+.textStatusBar {
+    color: white;
+    padding: 5%;
+}
+
+.StatusBar{
+    background-color: #149CE9;
+    border-radius: 10px;
+    justify-content: center;
+    text-align: center;
+    width: 100px;
+}
+
+.InfoBarLeft{
+    background-color: #fb8a2d;
+    border-bottom-left-radius: 10px;
+    justify-content: center;
+    text-align: center;
+    width: 84px;
+}
+
+.InfoBarCenter{
+    background-color: #fb8a2d;
+    justify-content: center;
+    text-align: center;
+    width: 83px;
+}
+
+.InfoBarRight{
+    background-color: #fb8a2d;
+    border-bottom-right-radius: 10px;
+    justify-content: center;
+    text-align: center;
+    width: 83px;
+}
+
+.timeContainer {
+    margin-top: 1%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 0rem 0;
+}
+
+.TeamLeftName{
+    background-color: #149CE9;
+    justify-content: center;
+    text-align: center;
+    width: 200px;
+}
+
+.TeamLeftScore{
+    background-color: #ffffff;
+    justify-content: center;
+    text-align: center;
+    width: 50px;
+}
+
+.TeamLeftScoreText {
+    padding: 23%;
+    color: black;
+}
+
+.TeamLeftScoreText2 {
+    padding: 24%;
+    color: black;
+}
+
+.TeamLeftScoreText3 {
+    padding: 25%;
+    color: black;
+}
+
+.TeamLeftScoreText4 {
+    padding: 25%;
+    color: black;
+}
+
+.TeamLeftText {
+    color: white;
+    padding: 5%;
+}
+
+.TeamLeftText2 {
+    color: white;
+    padding: 13px;
+}
+
+.TeamLeftText3 {
+    color: white;
+    padding: 12px;
+    padding-Top: 12px;
+}
+
+.TimeText {
+    font-size: 50px;
+    color: white;
+}
+
+.gameTopLeftItem {
+    width: 150px;
+    background-color: #149CE9;
+    padding: 12px;
+    display: flex;
+    position: relative;
+}
+
+.gameTopRightItem {
+    width: 100px;
+    background-color: #149CE9;
+    padding: 12px;
+    text-align: right;
+}
+
+.gameDateBox {
+    width: 150px;
+    background-color: #44baff;
+    border-top-left-radius: 10px;
+    padding: 4%;
+    display: flex;
+    position: relative;
+}
+
+.gameFieldBox {
+    width: 150px;
+    background-color: #44baff;
+    padding: 4%;
+    text-align: right;
+    border-top-right-radius: 10px;
+}
+
+.gameDayContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.gameDayText{
+    color: white;
+}
+
+.infoContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 0rem 0;
+}
+
+.ScoreButton {
+    width: 75px;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.ScoreButtonText {
+    padding: 5%;
+    color: white;
+}
+
+.textStatusButton {
+    color: white;
+    padding: 2%;
+}
+
+.StatusButton{
+    border-radius: 10px;
+    justify-content: center;
+    text-align: center;
+    width: 300px;
+    cursor: pointer;
+}
+
+.popup {
+    background-color: white;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    border-radius: 10px;
+    padding: 0rem 0;
+    width: 400px;
+}
+
+.PopupText {
+    padding: 1%;
+    color: black;
+}
+
+.ReturnButton {
+    background-color: #cf3c32;
+    width: 150px;
+    border-radius: 10px;
+    margin: 10px;
+    cursor: pointer;
+}
+
+.SaveButton {
+    background-color: #0e9e00;
+    width: 150px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.buttonText {
+    color: white;
+    padding: 5px;
+}
+
+.advContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding-top: 10px;
+}
+
+.advText {
+    font-weight: bold;
+    width: 180px;
+}
+
+.advGame {
+    background-color: #fb8a2d;
+    font-weight: bold;
+    width: 80px;
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+}
