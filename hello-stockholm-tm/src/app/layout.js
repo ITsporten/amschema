@@ -5,8 +5,8 @@ import NavBar from '@/components/NavBar'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: 'Hello Stockholm',
-  description: 'Hello Stockholm Tournament Manager',
+  title: 'ÅM',
+  description: 'ÅM',
 }
 
 export default function RootLayout({ children }) {

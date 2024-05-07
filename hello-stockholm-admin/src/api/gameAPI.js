@@ -59,7 +59,7 @@ export async function createGame(gameName, division){
 }
 
 export function convertMinutesToDate(minutes){
-    const originDay = 23;
+    const originDay = 11;
     let dayMinute = 1440;
     let hourMinute = 60;
     let remainder;

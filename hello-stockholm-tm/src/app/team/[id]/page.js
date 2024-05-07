@@ -97,7 +97,7 @@ export default function Home({params}) {
                     }
                 </div>
             }
-            <h1 className={styles.text}>Games</h1>
+            <h1 className={styles.text}>Matcher</h1>
             {  gLive &&
                     <div className={styles.container}>
                         <h4 className={styles.textStatus}>Spelas nu</h4>
