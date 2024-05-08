@@ -102,8 +102,16 @@ export default function Home({params}) {
     }
 
     const handleFinishGame = async () => {
-        if(game.Team1Score != game.Team2Score){
-            //TODO: KAN GE ERROR FÖR BRACKET MATCHEr
+        if(game.Type == 1){
+            if(game.Team1Score != game.Team2Score){
+                //TODO: KAN GE ERROR FÖR BRACKET MATCHEr
+                const gameRef = doc(db, "Game", game.id);
+                await updateDoc(gameRef, {Status: 2});
+                await finishGame(game);
+                setStatus(2);
+                setPopup(0);
+            }
+        }else if(game.Type == 0){
             const gameRef = doc(db, "Game", game.id);
             await updateDoc(gameRef, {Status: 2});
             await finishGame(game);
@@ -117,11 +125,16 @@ export default function Home({params}) {
     }
 
     const openPopup = () => {
-        if(game.Team1Score != game.Team2Score){
+        if(game.Type == 1){
+            if(game.Team1Score != game.Team2Score){
+                setPopup(1);
+                setTieError(0);
+            }else{
+                setTieError(1);
+            }
+        }else if(game.Type == 0){
             setPopup(1);
             setTieError(0);
-        }else{
-            setTieError(1);
         }
     }
 

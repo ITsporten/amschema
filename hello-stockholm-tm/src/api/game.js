@@ -401,6 +401,13 @@ async function reCalculateGroup(game){
         goalMatrix[team1index][team2index] = game.Team1Score;
         goalMatrix[team2index][team1index] = game.Team2Score;
       }
+      if(game.Team1Score == game.Team2Score){
+        winMatrix[team1index][team2index] = 2;
+        winMatrix[team2index][team1index] = 2;
+
+        goalMatrix[team1index][team2index] = game.Team1Score;
+        goalMatrix[team2index][team1index] = game.Team2Score;
+      }
       };
     })
 
@@ -425,6 +432,9 @@ async function reCalculateGroup(game){
       }
       if(winMatrix[i][j] == -1){
         gamesLost += 1;
+      }
+      if(winMatrix[i][j] == 2){
+        points += 1;
       }
       gd += goalMatrix[i][j];
       gd -= goalMatrix[j][i];
