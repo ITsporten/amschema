@@ -3,14 +3,14 @@ import { getFirestore } from "@firebase/firestore"
 import { getAuth } from "@firebase/auth"
 
 const firebaseConfig = {
- apiKey: process.env.NEXT_PUBLIC_API_KEY,
- authDomain: "hellostockholm-10129.firebaseapp.com",
- projectId: "hellostockholm-10129",
- storageBucket: "hellostockholm-10129.appspot.com",
- messagingSenderId: "573847371101",
- appId: "1:573847371101:web:00de7ea4acc3e038febcb4",
- measurementId: "G-Z8WGFVDVWK"
-};
+    apiKey: process.env.NEXT_PUBLIC_API_KEY,
+    authDomain: "angstromsmasterskapet.firebaseapp.com",
+    projectId: "angstromsmasterskapet",
+    storageBucket: "angstromsmasterskapet.appspot.com",
+    messagingSenderId: "612305948170",
+    appId: "1:612305948170:web:9461f9713c12852da919f3",
+    measurementId: "G-0WF5W551Z1"
+  };
 
 
 const app = initializeApp(firebaseConfig);
