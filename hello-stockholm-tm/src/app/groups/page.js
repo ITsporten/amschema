@@ -33,7 +33,7 @@ export default function Home() {
 
   useEffect(() => {
     const comp = (group1, group2) => {
-      if(group1.Name[1] <= group2.Name[1]){
+      if(group1.Name[0] <= group2.Name[0]){
         return -1;
       } else {
         return 1;
