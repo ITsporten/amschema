@@ -39,7 +39,7 @@ export default function GameListItem({game, clickable}) {
                                     {game.Status === 0 
                                         ? "Framtida"
                                         : game.Status === 1 
-                                        ? "Spelas nu"
+                                        ? "Spelas"
                                         : "Färdig"
                                     }
                                 </h4>
@@ -82,7 +82,7 @@ export default function GameListItem({game, clickable}) {
                                     {game.Status === 0 
                                         ? "Framtida"
                                         : game.Status === 1 
-                                        ? "Spelas nu"
+                                        ? "Spelas"
                                         : "Färdig"
                                     }
                                 </h4>
