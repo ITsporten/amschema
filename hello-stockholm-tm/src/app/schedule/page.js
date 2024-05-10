@@ -21,7 +21,7 @@ export default function Home() {
   const [womenGamesPrev, setWomenGamesPrev] = useState([]);
 
   const [openWomen, setOpenWomen] = useState(true);
-  const [filter, setFilter] = useState("Upcoming");
+  const [filter, setFilter] = useState("Live");
 
   const handleOpenButtonPress = () => {
     setOpenWomen(true);
