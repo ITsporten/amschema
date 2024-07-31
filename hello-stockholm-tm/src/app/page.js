@@ -9,36 +9,8 @@ import { createTeam } from '@/api/team'
 import TeamsList from '@/components/TeamsList'
 
 export default function Home() {
-  const [openWomen, setOpenWomen] = useState(true);
   const [teams, setTeams] = useState([]);
-  const [openTeams, setOpenTeams] = useState([]);
-  const [womenTeams, setWomenTeams] = useState([]);
-  const teamsCollectionRef = collection(db, "Team");
-
-  const handleOpenButtonPress = () => {
-    setOpenWomen(true);
-  }
-
-  const handleWomenButtonPress = () => {
-    setOpenWomen(false);
-  }
-
-  const setTeamsByDivision = () => {
-    let open = [];
-    let women = [];
-
-    for(let t in teams){
-      if(teams[t].Division === 0){
-        open.push(teams[t]);
-      }else if (teams[t].Division === 1){
-        women.push(teams[t]);
-      }
-    }
-    open.sort((a, b) => (a.Name > b.Name) ? 1 : -1)
-    women.sort((a, b) => (a.Name > b.Name) ? 1 : -1)
-    setOpenTeams(open);
-    setWomenTeams(women);
-  }
+  const teamsCollectionRef = collection(db, "Teams");
 
   useEffect(() => {
     const getTeams = async () => {
@@ -49,17 +21,10 @@ export default function Home() {
     getTeams();
   }, [])
 
-  useEffect(() => {
-    setTeamsByDivision(teams);
-  }, [teams])
-
   return (
     <main className={styles.main}>
       <div className={styles.teamListContainer}>
-        {openWomen 
-                    ? openTeams.map((team) => <TeamsList key={team.id} team={team} />) 
-                    : womenTeams.map((team) => <TeamsList key={team.id} team={team} />)        
-        }
+        { teams.map((team) => <TeamsList key={team.id} team={team} />) }
       </div>
     </main>
   )

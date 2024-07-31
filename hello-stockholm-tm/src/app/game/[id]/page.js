@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import styles from '../../schedule/page.module.css'
 import { db } from '../../firebase-config'
-import { doc, getDoc} from 'firebase/firestore'
+import { doc, getDoc, getDocs, collection, query, where} from 'firebase/firestore'
 import StatusBar from '@/components/game/StatusBar'
 import TeamLeft from '@/components/game/TeamLeft'
 import { convertMinutesToDate } from '@/api/game'
@@ -11,7 +11,10 @@ import InfoBar from '@/components/game/InfoBar'
 import Link from 'next/link'
 
 export default function Home({params}) {
-    const docRef = doc(db, "Game", params.id)
+    //Referens till databasobjektet
+    const docRef = doc(db, "Games", params.id)
+    const gameID = params.id;
+
     const [game, setGame] = useState(null);
     const [time, setTime] = useState("");
     const [day, setDay] = useState("");
@@ -19,7 +22,10 @@ export default function Home({params}) {
     const [winnerGame, setWgame] = useState(null);
     const [loserGame, setLGame] = useState(null);
     const [lgameOrGroup, setLGOG] = useState(null);
+    const [team1ID, setTeam1ID] = useState(null);
+    const [team2ID, setTeam2ID] = useState(null);
 
+    //TODO: DATUM OCH TID SKA ÄNDRAS
     const dateTimeConverter = (minutes) => {
         let dateTime = convertMinutesToDate(minutes);
         setTime(dateTime.substring(0, 5));
@@ -28,6 +34,17 @@ export default function Home({params}) {
 
     useEffect(() => {
         const getGame = async () => {
+            const teamGameRef = collection(db, "TeamGame");
+            const q = query(teamGameRef, where("GameID", "==", gameID));
+            const querySnapshot = await getDocs(q);
+            querySnapshot.forEach((doc) => {
+                let teamGame = doc.data();
+                if(teamGame.TeamPosition == 1){
+                    setTeam1ID(teamGame.TeamID);
+                }else if(teamGame.TeamPosition == 2){
+                    setTeam2ID(teamGame.TeamID);
+                }
+            });
             const doc = await getDoc(docRef);
             setGame(doc.data());
         }
@@ -38,13 +55,13 @@ export default function Home({params}) {
         const getAdv = async (wid, lid, lpos) => {
             if(lid != ""){
                 if(lpos != 3){
-                    const lgameRef = doc(db, "Game", lid);
+                    const lgameRef = doc(db, "Games", lid);
                     const res = await getDoc(lgameRef);
                     let lgame = {...res.data(), id: res.id};
                     setLGame(lgame);
                     setLGOG(1);
                 }else{
-                    const lgroupRef = doc(db, "Group", lid);
+                    const lgroupRef = doc(db, "Groups", lid);
                     const res = await getDoc(lgroupRef);
                     let lgroup = {...res.data(), id: res.id};
                     setLGame(lgroup);
@@ -52,7 +69,7 @@ export default function Home({params}) {
                 }
             }
             if(wid != ""){
-                const wgameRef = doc(db, "Game", wid);
+                const wgameRef = doc(db, "Games", wid);
                 const res2 = await getDoc(wgameRef);
                 let wgame = {...res2.data(), id: res2.id};
                 setWgame(wgame);
@@ -60,12 +77,7 @@ export default function Home({params}) {
         }
         if(game){
             dateTimeConverter(game.DateTime);
-            if(game.Division === 0){
-                setDivision("ÅM");
-            }
-            if(game.Division === 1){
-                setDivision("ÅM");
-            }
+            setDivision("ÅM");
             if(game.Type === 1){
                 let wid = "";
                 if(game.WNextGame.length > 0){
@@ -101,8 +113,8 @@ export default function Home({params}) {
                     score1={game.Team1Score} 
                     teamName2={game.Team2Name} 
                     score2={game.Team2Score}
-                    teamID1={game.Team1ID}
-                    teamID2={game.Team2ID}
+                    teamID1={team1ID}
+                    teamID2={team2ID}
                 />
             </div>
             <div className={styles.infoContainer}>
@@ -135,7 +147,7 @@ export default function Home({params}) {
                     <div className={styles.advText}>Förlorare går till: </div>
                     <Link href={'/group/' + loserGame.id}>
                         <div className={styles.advGame} >
-                            <h4 >{loserGame.Name}</h4>
+                            <h4 >{loserGame.GroupName}</h4>
                         </div>
                     </Link>
                 </div>
