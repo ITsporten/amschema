@@ -1,5 +1,5 @@
 import {db} from '../app/firebase-config'
-import { collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc} from 'firebase/firestore'
+import { collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc, Timestamp} from 'firebase/firestore'
 import { getGroups } from './api';
 
 function checkIfGameExists(listOfGames, gameName){
@@ -33,7 +33,7 @@ export async function createGame(gameName){
     if(!gameExists){
         const gamesCollectionRef = collection(db, "Games");
         let game = {
-            DateTime: 0,
+            DateTime: Timestamp.fromDate(new Date()),
             Field: "Field X",
             GameName: gameName,
             LNextGame: [],
@@ -55,29 +55,28 @@ export async function createGame(gameName){
     return -1;
 }
 
-export function convertMinutesToDate(minutes){
-    const originDay = 11;
-    let dayMinute = 1440;
-    let hourMinute = 60;
-    let remainder;
-  
-    let day = Math.floor(minutes/dayMinute) + originDay;
-    remainder = minutes % dayMinute;
-  
-    let hour = Math.floor(remainder/hourMinute);
-    remainder = remainder % hourMinute;
-  
-    let minute = remainder;
-    let hString = hour.toString();
-    if(hour < 10){
-      hString = "0" + hour.toString();
+export function convertMinutesToDate(dateTime){
+    let monthMap = {
+        0: "Jan",
+        1: "Feb",
+        2: "Mar",
+        3: "Apr",
+        4: "Maj",
+        5: "Jun",
+        6: "Jul",
+        7: "Aug",
+        8: "Sep",
+        9: "Okt",
+        10: "Nov",
+        11: "Dec"
     }
-  
-    let mString = minute.toString()
-    if(minute < 10){
-      mString = "0" + minute.toString();
-    }
-    return [day.toString(), hString, mString];
+    
+    const date = dateTime.toDate();
+    let month = monthMap[date.getMonth()];
+    let day = date.getDate().toString();
+    let hour = date.getHours().toString();
+    let minutes = date.getMinutes().toString();
+    return [month, day.toString(), hour, minutes];
     //return hString + ":" + mString + " - " + day.toString() + " Feb";
   }
 

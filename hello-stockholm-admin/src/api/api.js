@@ -32,7 +32,7 @@ export async function createAndAddGame(gameName, team1ID, team2ID, team1Name, te
     if(!gameExists){
         const gamesCollectionRef = collection(db, "Games");
         let game = {
-            DateTime: 0,
+            DateTime: Timestamp.fromDate(new Date()),
             Field: "Field X",
             GameName: gameName,
             LNextGame: [],
