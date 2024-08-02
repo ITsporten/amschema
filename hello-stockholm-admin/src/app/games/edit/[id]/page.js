@@ -98,9 +98,9 @@ export default function Home({params}) {
     const updateTeam = async () => {
       let stat = -1;
       if(teamIndex === "1"){
-        stat = await setExistingTeam(params.id, team1name, parseInt(editDivision), parseInt(teamIndex))
+        stat = await setExistingTeam(params.id, team1name, parseInt(teamIndex))
       } else if(teamIndex === "2"){
-        stat = await setExistingTeam(params.id, team2name, parseInt(editDivision), parseInt(teamIndex)) 
+        stat = await setExistingTeam(params.id, team2name, parseInt(teamIndex)) 
       }
       if(stat === -1){
         setTeamError(1);
@@ -134,7 +134,7 @@ export default function Home({params}) {
 
       if(stat === 1){
         let dt = convertDateToMinutes(day, hour, minute);
-        await updateGeneral(params.id, editName, parseInt(editDivision), dt, field);
+        await updateGeneral(params.id, editName, dt, field);
         setRefresh(refresh+1)
       }
     }
@@ -154,7 +154,7 @@ export default function Home({params}) {
 
     useEffect(() => {
       const getGame = async () => {
-        const gameRef = doc(db, "Game", params.id);
+        const gameRef = doc(db, "Games", params.id);
         let game = await getDoc(gameRef);
         setGame({...game.data(), id: game.id});
       }
@@ -164,7 +164,6 @@ export default function Home({params}) {
     useEffect(() => {
       if(game){
         setEditName(game.GameName);
-        setEditDivision(game.Division.toString())
         let dateTime = convertMinutesToDate(game.DateTime);
         setDay(dateTime[0]);
         setHour(dateTime[1]);
@@ -189,15 +188,8 @@ export default function Home({params}) {
               <div>
                 <h3>Game name</h3>
                 <input className={styles.input} value={editName} onChange={updateEditName} placeholder={"Edit game name"}></input>
-                <h3>Division</h3>
-                  <select
-                      value={editDivision}
-                      onChange={e => setEditDivision(e.target.value)}
-                      className={styles.select}
-                    >
-                    <option value="0">Open</option>
-                    <option value="1">Women</option>
-                  </select>
+                
+                  
               </div>
               <div className={styles.center2}>
                 <input className={styles.inputSmall} value={day} onChange={updateDay}></input>
