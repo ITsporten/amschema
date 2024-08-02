@@ -19,11 +19,16 @@ export default function Home({params}) {
     const [score1, setScore1] = useState(null);
     const [score2, setScore2] = useState(null);
     const [status, setStatus] = useState(null);
-    const [gamesRef, setGamesRef] = useState(collection(db, "Game"));
+    const [gamesRef, setGamesRef] = useState(collection(db, "Games"));
+
+    const [teamGameRef, setTeamGamesRef] = useState(collection(db, "TeamGame"));
     const [goal, setGoal] = useState(0);
     const [popup, setPopup] = useState(0);
     const [loggedin, setLoggedin] = useState(false);
     const [tieError, setTieError] = useState(0);
+    const [ready, setReady] = useState(false);
+    const [team1ID, setTeam1ID] = useState("");
+    const [team2ID, setTeam2ID] = useState("");
 
     const router = useRouter();
     useEffect(() => {
@@ -33,11 +38,25 @@ export default function Home({params}) {
             let lst = [];
 
             querySnapshot.forEach((doc) => {
-                // doc.data() is never undefined for query doc snapshots
                 lst.push({ ...doc.data(), id: doc.id });
-                console.log("HEJ")
             });
             setGame(lst[0]);
+            const q2 = query(teamGameRef, where("GameID", "==", lst[0].id));
+            const querySnapshot2 = await getDocs(q2);
+            let count = 0;
+            querySnapshot2.forEach((doc) => {
+                count++;
+                if(doc.data().TeamPosition == 1){
+                    setTeam1ID(doc.id);
+                }
+                if(doc.data().TeamPosition == 2){
+                    setTeam2ID(doc.id);
+                }
+            });
+            if(count == 2){
+                setReady(true);
+            }
+
         }
         getGame();
     }, [gameName, gamesRef, status, goal]);
@@ -63,7 +82,7 @@ export default function Home({params}) {
     }, [])
 
     const handleAddScore = async (team) => {
-        const gameRef = doc(db, "Game", game.id);
+        const gameRef = doc(db, "Games", game.id);
 
         if(team === 1){
             await updateDoc(gameRef, {Team1Score: score1+1});
@@ -76,7 +95,7 @@ export default function Home({params}) {
     }
 
     const handleReduceScore = async (team) => {
-        const gameRef = doc(db, "Game", game.id);
+        const gameRef = doc(db, "Games", game.id);
         if(team === 1){
             if(score1 > 0){
                 await updateDoc(gameRef, {Team1Score: score1-1});
@@ -93,9 +112,9 @@ export default function Home({params}) {
 
     const handleStartGame = async () => {
         //Kolla så att matchen har lag!!!
-        if(game.Team1ID != "" && game.Team2ID != ""){
+        if(ready){
             //Sätt status till 1
-            const gameRef = doc(db, "Game", game.id);
+            const gameRef = doc(db, "Games", game.id);
             await updateDoc(gameRef, {Status: 1});
             setStatus(1);
         }
@@ -104,17 +123,17 @@ export default function Home({params}) {
     const handleFinishGame = async () => {
         if(game.Type == 1){
             if(game.Team1Score != game.Team2Score){
-                //TODO: KAN GE ERROR FÖR BRACKET MATCHEr
-                const gameRef = doc(db, "Game", game.id);
+                //TODO: KAN GE ERROR FÖR BRACKET MATCHER
+                const gameRef = doc(db, "Games", game.id);
                 await updateDoc(gameRef, {Status: 2});
-                await finishGame(game);
+                await finishGame(game, team1ID, team2ID);
                 setStatus(2);
                 setPopup(0);
             }
         }else if(game.Type == 0){
-            const gameRef = doc(db, "Game", game.id);
+            const gameRef = doc(db, "Games", game.id);
             await updateDoc(gameRef, {Status: 2});
-            await finishGame(game);
+            await finishGame(game, team1ID, team2ID);
             setStatus(2);
             setPopup(0);
         }
