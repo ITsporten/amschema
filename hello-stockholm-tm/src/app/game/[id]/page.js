@@ -17,6 +17,7 @@ export default function Home({params}) {
 
     const [game, setGame] = useState(null);
     const [time, setTime] = useState("");
+    const [month, setMonth] = useState("");
     const [day, setDay] = useState("");
     const [division, setDivision] = useState("");
     const [winnerGame, setWgame] = useState(null);
@@ -28,8 +29,9 @@ export default function Home({params}) {
     //TODO: DATUM OCH TID SKA ÄNDRAS
     const dateTimeConverter = (minutes) => {
         let dateTime = convertMinutesToDate(minutes);
-        setTime(dateTime.substring(0, 5));
-        setDay(dateTime.substring(8, 10));
+        setTime(dateTime[0] + ":" + dateTime[1]);
+        setDay(dateTime[2]);
+        setMonth(dateTime[3])
     }
 
     useEffect(() => {
@@ -105,7 +107,7 @@ export default function Home({params}) {
                 <h1 className={styles.TimeText}>{time}</h1>
             </div>
             <div className={styles.gameDayContainer}>
-                <h4 className={styles.gameDayText}>{day} Maj</h4>
+                <h4 className={styles.gameDayText}>{day} {month}</h4>
             </div>
             <div className={styles.timeContainer}>
                 <TeamLeft 

@@ -31,30 +31,29 @@ function convertDateToMinutes(day, hour, minute){
   return days*1440 + parseInt(hour)*60 + parseInt(minute);
 }
 
-export function convertMinutesToDate(minutes){
-  const originDay = 11;
-  let dayMinute = 1440;
-  let hourMinute = 60;
-  let remainder;
-
-  let day = Math.floor(minutes/dayMinute) + originDay;
-  remainder = minutes % dayMinute;
-
-  let hour = Math.floor(remainder/hourMinute);
-  remainder = remainder % hourMinute;
-
-  let minute = remainder;
-  let hString = hour.toString();
-  if(hour < 10){
-    hString = "0" + hour.toString();
+export function convertMinutesToDate(dateTime){
+  let monthMap = {
+    0: "Jan",
+    1: "Feb",
+    2: "Mar",
+    3: "Apr",
+    4: "Maj",
+    5: "Jun",
+    6: "Jul",
+    7: "Aug",
+    8: "Sep",
+    9: "Okt",
+    10: "Nov",
+    11: "Dec"
   }
 
-  let mString = minute.toString()
-  if(minute < 10){
-    mString = "0" + minute.toString();
-  }
+  const date = dateTime.toDate()
+  let hour = date.getHours();
+  let minutes = date.getMinutes();
+  let day = date.getDate();
+  let month = monthMap[date.getMonth()];
 
-  return hString + ":" + mString + " - " + day.toString() + " Maj";
+  return [hour, minutes, day, month];
 }
 
 async function advanceTeams(game, team1ID, team2ID){

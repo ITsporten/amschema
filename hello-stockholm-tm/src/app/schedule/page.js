@@ -19,7 +19,7 @@ export default function Home() {
 
 
   const sortGamesByDate = (game1, game2) => {
-    if(game1.DateTime <= game2.DateTime){
+    if(game1.DateTime.toDate() <= game2.DateTime.toDate()){
       return -1;
     }
     else return 1;
