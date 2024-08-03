@@ -52,7 +52,9 @@ export function convertMinutesToDate(dateTime){
   let minutes = date.getMinutes();
   let day = date.getDate();
   let month = monthMap[date.getMonth()];
-
+  if(minutes < 10){
+    minutes = "0" + minutes.toString()
+  }
   return [hour, minutes, day, month];
 }
 
