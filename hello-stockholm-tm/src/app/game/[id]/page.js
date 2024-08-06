@@ -15,6 +15,7 @@ export default function Home({params}) {
     const docRef = doc(db, "Games", params.id)
     const gameID = params.id;
 
+    const [scoreKeeperURL, setSCURL] = useState("");
     const [game, setGame] = useState(null);
     const [time, setTime] = useState("");
     const [month, setMonth] = useState("");
@@ -26,7 +27,6 @@ export default function Home({params}) {
     const [team1ID, setTeam1ID] = useState(null);
     const [team2ID, setTeam2ID] = useState(null);
 
-    //TODO: DATUM OCH TID SKA ÄNDRAS
     const dateTimeConverter = (minutes) => {
         let dateTime = convertMinutesToDate(minutes);
         setTime(dateTime[0] + ":" + dateTime[1]);
@@ -48,6 +48,7 @@ export default function Home({params}) {
                 }
             });
             const doc = await getDoc(docRef);
+            setSCURL("/score_keeper/" + doc.data().GameName);
             setGame(doc.data());
         }
         getGame();
@@ -122,7 +123,9 @@ export default function Home({params}) {
             <div className={styles.infoContainer}>
                 <InfoBar prompt={game.Field} alignment={"left"}/>
                 <InfoBar prompt={game.GameName} alignment={"center"}/>
-                <InfoBar prompt={division}/>
+                <Link href={scoreKeeperURL}>
+                    <InfoBar prompt={division}/>
+                </Link>
             </div>
             { winnerGame &&
                 <div className={styles.advContainer}>
