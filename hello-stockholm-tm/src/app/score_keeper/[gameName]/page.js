@@ -28,7 +28,7 @@ export default function Home({params}) {
     const [ready, setReady] = useState(false);
     const [team1ID, setTeam1ID] = useState("");
     const [team2ID, setTeam2ID] = useState("");
-    const [loggedIn, setLoggedIn] = useState(true);
+    const [loggedIn, setLoggedIn] = useState(false);
     const [password, setPassword] = useState("");
 
     const router = useRouter();
