@@ -83,7 +83,7 @@ export default function Home() {
             }
             { gamesUpcoming.length != 0 &&
               <>
-                <h3 className={styles.typeText}>Framtida</h3>
+                <h3 className={styles.typeText}>Framtida matcher</h3>
                 {gamesUpcoming.map((game) => <GameListItem key={game.id} game={game} clickable={true}/>)}
               </>
             }
