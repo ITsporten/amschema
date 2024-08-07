@@ -15,7 +15,7 @@ export default function Home() {
   const [gamesLive, setGamesLive] = useState([]);
   const [gamesPrev, setGamesPrev] = useState([]);
 
-  const [filter, setFilter] = useState("Live");
+  const [filter, setFilter] = useState("LiveUpcomming");
 
 
   const sortGamesByDate = (game1, game2) => {
@@ -69,15 +69,27 @@ export default function Home() {
       
       <div className={styles.gameListContainer}>
         <select className={styles.filter} value={filter} onChange={e => setFilter(e.target.value)}>
-          <option value="Upcoming">Framtida matcher</option>
-          <option value="Live">Spelas nu</option>
-          <option value="Previous">Färdiga matcher</option>
+          <option value="LiveUpcomming">Live / Kommande</option>
+          <option value="Previous">Resultat</option>
         </select>
-        { filter === "Upcoming"
-            ? gamesUpcoming.map((game) => <GameListItem key={game.id} game={game} clickable={true}/>)
-            : filter === "Live"
-            ? gamesLive.map((game) => <GameListItem key={game.id} game={game} clickable={true}/>) 
-            : gamesPrev.map((game) => <GameListItem key={game.id} game={game} clickable={true}/>)
+        { filter === "LiveUpcomming"
+            ? 
+            <>
+            { gamesLive.length != 0 &&
+              <>
+                <h3 className={styles.typeText}>Live</h3>
+                {gamesLive.map((game) => <GameListItem key={game.id} game={game} clickable={true}/>)}
+              </>
+            }
+            { gamesUpcoming.length != 0 &&
+              <>
+                <h3 className={styles.typeText}>Framtida</h3>
+                {gamesUpcoming.map((game) => <GameListItem key={game.id} game={game} clickable={true}/>)}
+              </>
+            }
+              </>
+            :
+              gamesPrev.map((game) => <GameListItem key={game.id} game={game} clickable={true}/>)
         }
       </div>
     </main>
