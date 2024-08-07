@@ -106,7 +106,7 @@ export default function Home({params}) {
         getGroup();
         getGames();
     }, [team])
-
+    
     return (
         <main className={styles.main}>
             <div className={styles.center}>

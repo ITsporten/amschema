@@ -28,7 +28,7 @@ export default function Home({params}) {
     const [ready, setReady] = useState(false);
     const [team1ID, setTeam1ID] = useState("");
     const [team2ID, setTeam2ID] = useState("");
-    const [loggedIn, setLoggedIn] = useState(false);
+    const [loggedIn, setLoggedIn] = useState(true);
     const [password, setPassword] = useState("");
 
     const router = useRouter();
@@ -48,10 +48,10 @@ export default function Home({params}) {
             querySnapshot2.forEach((doc) => {
                 count++;
                 if(doc.data().TeamPosition == 1){
-                    setTeam1ID(doc.id);
+                    setTeam1ID(doc.data().TeamID);
                 }
                 if(doc.data().TeamPosition == 2){
-                    setTeam2ID(doc.id);
+                    setTeam2ID(doc.data().TeamID);
                 }
             });
             if(count == 2){
@@ -115,7 +115,6 @@ export default function Home({params}) {
     const handleFinishGame = async () => {
         if(game.Type == 1){
             if(game.Team1Score != game.Team2Score){
-                //TODO: KAN GE ERROR FÖR BRACKET MATCHER
                 const gameRef = doc(db, "Games", game.id);
                 await updateDoc(gameRef, {Status: 2});
                 await finishGame(game, team1ID, team2ID);

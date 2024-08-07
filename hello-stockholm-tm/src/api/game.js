@@ -128,7 +128,7 @@ async function advanceTeams(game, team1ID, team2ID){
           Team2Name: winnerName
         })
       }
-
+      
       let teamGameObj = {
         TeamID: winnerId,
         GameID: wGame.id,
@@ -194,6 +194,58 @@ async function advanceTeams(game, team1ID, team2ID){
   }
 }
 
+async function advanceTeamsFromGroup(group, teamData, teamIDs){
+
+  let teamGames = []
+  let teamGameCollectionRef = collection(db, "TeamGame");
+  let result = await getDocs(teamGameCollectionRef);
+  result.forEach((doc) => {
+    // doc.data() is never undefined for query doc snapshots
+    teamGames.push({...doc.data(), id: doc.id})
+  }); 
+  for(let i = 0; i < group.NextGames.length/2; i++){
+    
+    //Kolla om matchen är ostartad
+    let gameRef = doc(db, "Games", group.NextGames[i*2])
+    let res = await getDoc(gameRef);
+    let gameObj = {...res.data(), id: res.id}
+    if(gameObj.Status != 1){
+      //Lägg till namn i match
+      let pos = group.NextGames[(i*2)+1];
+      if(pos == 1){
+        await updateDoc(gameRef, {
+          Team1Name: teamData[i][0],
+        })
+      }else if(pos == 2){
+        await updateDoc(gameRef, {
+          Team2Name: teamData[i][0],
+        })
+      }
+      //Kolla så det inte ligger någon skit i teamGames
+        //Ta bort isåfall
+      for(let j in teamGames){
+        if(teamGames[j].GameID == gameObj.id && teamGames[j].TeamPosition == pos){
+          let teamGameRef = doc(db, "TeamGame", teamGames[j].id)
+          await deleteDoc(teamGameRef);
+        }
+      }
+      
+      //skapa teamgames
+      let teamGameObj = {
+        TeamID: teamIDs[i],
+        GameID: gameObj.id,
+        TeamPosition: pos,
+      }
+
+      let tgRef = collection(db, "TeamGame");
+      await addDoc(tgRef, teamGameObj);
+
+    }else{
+      console.log("Game already started");
+    }
+  }
+}
+
 async function reCalculateGroup(game){
   //Ta fram gruppnamn från game.GameName
   let gamename = game.GameName.replace(/[0-9]/g, '');
@@ -252,9 +304,10 @@ async function reCalculateGroup(game){
 
   //Indexet som laget ligger på i Group.TeamIDs är indexet i matriserna
   //Skapa statistik
-  
+  let finishedGamesCount = 0; 
   groupGames.forEach((game) => {
     if(game.Status == 2){
+      finishedGamesCount++;
       //Hitta team1index och team2index
       let team1index = teamNames.indexOf(game.Team1Name);
       let team2index = teamNames.indexOf(game.Team2Name);
@@ -282,7 +335,11 @@ async function reCalculateGroup(game){
       }
       };
     })
-
+  let advanceGroup = false;
+  
+  if(finishedGamesCount == groupGames.length){
+    advanceGroup = true;
+  }
   //Skapa lista med statistik i ordning
   let stats = [];
   //Mappa namn till index
@@ -382,14 +439,17 @@ async function reCalculateGroup(game){
   }
   //Hitta id på GroupTeams
   //Uppdatera GroupTeams
-  for(let i in teamIDs){
+  for(let i in newTeamIDs){
     for(let j in groupTeams){
-      if(teamIDs[i] == groupTeams[j].TeamID){
+      if(newTeamIDs[i] == groupTeams[j].TeamID){
         let gtDocRef = doc(db, "GroupTeams", groupTeams[j].id)
         await updateDoc(gtDocRef, {TeamData: newTeamData[i]})
         break;
       }
     }
+  }
+  if(advanceGroup){
+    advanceTeamsFromGroup(groupObj, newTeamData, newTeamIDs);
   }
 }
 
