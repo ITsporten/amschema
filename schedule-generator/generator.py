@@ -1,9 +1,17 @@
-import os
 import openpyxl
 import firebase_admin
 from firebase_admin import credentials, firestore
 from datetime import datetime, timezone, timedelta
-import pytz
+
+
+def delete_collection(coll_ref):
+    docs = coll_ref.list_documents()
+    deleted = 0
+
+    for doc in docs:
+        doc.delete()
+        deleted = deleted + 1
+
 
 def createGame(db, gameName, gameTime, field, _type, WNextGame, LNextGame, team1Name, team2Name):
     gameObject = {
@@ -302,8 +310,19 @@ def generateAllGroups(db, wb, date, qf):
     for i in range(len(groupNames)):
         generateGroup(db, wb, columns[i], teamRow, gameRow, groupNames[i], nextGames[i], date)
 
+def deleteDBDocuments(db):
+    gameRef = db.collection('Games')
+    teamRef = db.collection('Teams')
+    groupRef = db.collection('Groups')
+    gtRef = db.collection('GroupTeams')
+    tgRef = db.collection('TeamGame')
 
-
+    delete_collection(gameRef)
+    delete_collection(teamRef)
+    delete_collection(groupRef)
+    delete_collection(gtRef)
+    delete_collection(tgRef)
+    
 cred_path = './service_key.json'
 
 # Use the application default credentials
@@ -312,6 +331,8 @@ cred = credentials.Certificate(cred_path)
 # Initialize the Firestore client
 firebase_admin.initialize_app(cred)
 db = firestore.client()
+
+deleteDBDocuments(db)
 
 wb = openpyxl.load_workbook('schedule.xlsx', data_only=True)
 
