@@ -56,7 +56,7 @@ if __name__ == "__main__":
     firebase_admin.initialize_app(cred)
     db = firestore.client()
 
-    wb = openpyxl.load_workbook('standings.xlsx', data_only=True)
+    wb = openpyxl.load_workbook('./datasheets/standings.xlsx', data_only=True)
     ws = wb.active
 
     deleteDBDocuments(db)

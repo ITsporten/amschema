@@ -334,7 +334,7 @@ db = firestore.client()
 
 deleteDBDocuments(db)
 
-wb = openpyxl.load_workbook('schedule.xlsx', data_only=True)
+wb = openpyxl.load_workbook('./datasheets/schedule.xlsx', data_only=True)
 
 ws2 = wb['Gruppspel']
 date = ws2['A1'].value
