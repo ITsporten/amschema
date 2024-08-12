@@ -8,7 +8,6 @@ import GameListItem from '@/components/Game'
 import ScoreButton from '@/components/game/ScoreButton'
 import StatusButton from '@/components/game/StatusButton'
 import FinishGamePopup from '@/components/game/FinishGamePopup'
-import { onAuthStateChanged, updatePassword } from 'firebase/auth'
 import { useRouter } from 'next/navigation'
 import { finishGame } from '@/api/game'
 
