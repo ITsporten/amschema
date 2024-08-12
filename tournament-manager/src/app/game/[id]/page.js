@@ -43,7 +43,6 @@ export default function Home({params}) {
                 let teamGame = doc.data();
                 if(teamGame.TeamPosition == 1){
                     setTeam1ID(teamGame.TeamID);
-                    console.log(teamGame)
                 }else if(teamGame.TeamPosition == 2){
                     setTeam2ID(teamGame.TeamID);
                 }
