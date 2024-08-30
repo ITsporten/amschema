@@ -13,9 +13,16 @@ export default function Home() {
   const teamsCollectionRef = collection(db, "Teams");
 
   useEffect(() => {
+    const sortTeams = (team1, team2) => {
+      return team1.TeamName <= team2.TeamName ? -1 : 1;
+    }
+
     const getTeams = async () => {
       const data = await getDocs(teamsCollectionRef);
-      setTeams(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      let teamsList = [];
+      teamsList = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      teamsList.sort(sortTeams);
+      setTeams(teamsList);
     }
     
     getTeams();
