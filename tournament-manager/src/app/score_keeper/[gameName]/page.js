@@ -10,6 +10,7 @@ import StatusButton from '@/components/game/StatusButton'
 import FinishGamePopup from '@/components/game/FinishGamePopup'
 import { useRouter } from 'next/navigation'
 import { finishGame } from '@/api/game'
+import { FadeLoader } from 'react-spinners'
 
 export default function Home({params}) {
     const [gameName, setGameName] = useState(params.gameName)
@@ -28,6 +29,7 @@ export default function Home({params}) {
     const [team2ID, setTeam2ID] = useState("");
     const [loggedIn, setLoggedIn] = useState(false);
     const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const router = useRouter();
     useEffect(() => {
@@ -111,6 +113,7 @@ export default function Home({params}) {
     }
 
     const handleFinishGame = async () => {
+        setLoading(true);
         if(game.Type == 1){
             if(game.Team1Score != game.Team2Score){
                 const gameRef = doc(db, "Games", game.id);
@@ -126,6 +129,7 @@ export default function Home({params}) {
             setStatus(2);
             setPopup(0);
         }
+        setLoading(false);
     }
 
     const test = () => {
@@ -200,12 +204,18 @@ export default function Home({params}) {
                     </div>
                 </div>
             }
-            { game && popup === 1 &&
+            { game && popup === 1 && !loading &&
                 <FinishGamePopup game={game} handleReturn={closePopup} handleSave={handleFinishGame}/>
             }
-                
-                
-                
+            { game && popup === 1 && loading &&
+                <FadeLoader
+                    color={"#ff0084"}
+                    loading={loading}
+                    size={150}
+                    aria-label="Loading Spinner"
+                    data-testid="loader"
+                />
+            }   
             </div>
         </main>
   )
