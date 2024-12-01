@@ -56,6 +56,24 @@
   font-size: medium;
 }
 
+.navbarText:hover {
+  color: #00b0f4;
+  padding-right: 10px;
+  padding-left: 10px;
+  font-weight: bold;
+  font-size: medium;
+  cursor: pointer;
+}
+
+.navbarTextActive:hover {
+  color: #ff0084;
+  padding-right: 10px;
+  padding-left: 10px;
+  font-weight: bold;
+  font-size: medium;
+  cursor: pointer;
+}
+
 .textButton {
   border: none;
   background-color: #00b0f4;
