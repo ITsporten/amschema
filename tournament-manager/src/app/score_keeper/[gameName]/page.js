@@ -64,6 +64,9 @@ export default function Home({params}) {
                 lst.push({ ...doc.data(), id: doc.id });
             });
             setGame(lst[0]);
+            if(!fetchBracketItem){
+                setFetchBracketItem(true);
+            }
             const q2 = query(teamGameRef, where("GameID", "==", lst[0].id));
             const querySnapshot2 = await getDocs(q2);
             let count = 0;
@@ -148,7 +151,7 @@ export default function Home({params}) {
         
                     await updateDoc(bracketRef, {participants: [bracketItem.participants[0], team2BracketData]})
                 }
-                
+
                 setGoal(goal+4);
             }
         }
