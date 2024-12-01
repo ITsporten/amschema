@@ -19,6 +19,7 @@ export default function Home({params}) {
     const [score2, setScore2] = useState(null);
     const [status, setStatus] = useState(null);
     const [gamesRef, setGamesRef] = useState(collection(db, "Games"));
+    const [bracketCollectionRef, setBracketRef] = useState(collection(db, "Bracket"));
     const [sc, setSC] = useState("åmkingkong")
     const [teamGameRef, setTeamGamesRef] = useState(collection(db, "TeamGame"));
     const [goal, setGoal] = useState(0);
@@ -30,8 +31,29 @@ export default function Home({params}) {
     const [loggedIn, setLoggedIn] = useState(false);
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [bracketItem, setBracketItem] = useState(null);
+    const [fetchBracketItem, setFetchBracketItem] = useState(false);
 
     const router = useRouter();
+    useEffect(() => {
+        const getBracketItem = async () => {
+            const q = query(bracketCollectionRef, where("id", "==", game.id));
+            const querySnapshot = await getDocs(q);
+            let lst = [];
+
+            querySnapshot.forEach((doc) => {
+                lst.push({ ...doc.data(), id: doc.id });
+            });
+            if(lst.length > 0){
+                setBracketItem(lst[0]);
+            }
+        }
+        
+        if(game){
+            getBracketItem()
+        }
+    }, [fetchBracketItem])
+
     useEffect(() => {
         const getGame = async () => {
             const q = query(gamesRef, where("GameName", "==", gameName));
@@ -74,10 +96,25 @@ export default function Home({params}) {
 
         if(team === 1){
             await updateDoc(gameRef, {Team1Score: score1+1});
+            if(bracketItem){
+                const bracketRef = doc(db, "Bracket", bracketItem.Identifier)
+                
+                let team1BracketData = bracketItem.participants[0];
+                team1BracketData.resultText = (score1+1).toString();
+
+                await updateDoc(bracketRef, {participants: [team1BracketData, bracketItem.participants[1]]})
+            }
             setGoal(goal+1);
         }
         if(team === 2){
             await updateDoc(gameRef, {Team2Score: score2+1});
+            if(bracketItem){
+                const bracketRef = doc(db, "Bracket", bracketItem.Identifier)
+                let team2BracketData = bracketItem.participants[1];
+                team2BracketData.resultText = (score2+1).toString();
+    
+                await updateDoc(bracketRef, {participants: [bracketItem.participants[0], team2BracketData]})
+            }
             setGoal(goal+2);
         }
     }
@@ -91,12 +128,27 @@ export default function Home({params}) {
         if(team === 1){
             if(score1 > 0){
                 await updateDoc(gameRef, {Team1Score: score1-1});
+                if(bracketItem){
+                    const bracketRef = doc(db, "Bracket", bracketItem.Identifier)
+                    let team1BracketData = bracketItem.participants[0];
+                    team1BracketData.resultText = (score1-1).toString();
+    
+                    await updateDoc(bracketRef, {participants: [team1BracketData, bracketItem.participants[1]]})
+                }
                 setGoal(goal+3);
             }
         }
         if(team === 2){
             if(score2 > 0){
                 await updateDoc(gameRef, {Team2Score: score2-1});
+                if(bracketItem){
+                    const bracketRef = doc(db, "Bracket", bracketItem.Identifier)
+                    let team2BracketData = bracketItem.participants[1];
+                    team2BracketData.resultText = (score2-1).toString();
+        
+                    await updateDoc(bracketRef, {participants: [bracketItem.participants[0], team2BracketData]})
+                }
+                
                 setGoal(goal+4);
             }
         }

@@ -136,7 +136,17 @@ async function advanceTeams(game, team1ID, team2ID){
       }
 
       await addDoc(teamGameRef, teamGameObj);
-      
+      // Kolla om det finns en bracket game på nästa match
+      let gameID   = game.WNextGame[0];
+      let teamPos  = game.WNextGame[1];
+      let teamID   = winnerId;
+      let teamName = winnerName;
+      let isWinner = true;
+      let bracketItemID = game.id;
+      let isPosOneWinner = teamPos == 1 ? true : false;
+
+      await advanceToBracketItem(gameID, teamPos, teamID, teamName, isWinner);
+      await updatePlayedBracketItem(bracketItemID, isPosOneWinner);
     }
   }
   
@@ -189,7 +199,94 @@ async function advanceTeams(game, team1ID, team2ID){
         }
 
         await addDoc(teamGameRef, teamGameObj);
+        // Kolla om det finns en bracket game på nästa match
+        let gameID   = game.LNextGame[0];
+        let teamPos  = game.LNextGame[1];
+        let teamID   = loserId;
+        let teamName = loserName;
+        let bracketItemID = game.id;
+        let isPosOneWinner = teamPos == 1 ? true : false;
+
+        await advanceToBracketItem(gameID, teamPos, teamID, teamName);
+        await updatePlayedBracketItem(bracketItemID, isPosOneWinner);
         }
+    }
+  }
+}
+
+async function updatePlayedBracketItem(bracketItemID, isPosOneWinner){
+  const bracketCollectionRef = collection(db, "Bracket");
+  const q = query(bracketCollectionRef, where("id", "==", bracketItemID));
+  const querySnapshot = await getDocs(q);
+  let lst = [];
+
+  querySnapshot.forEach((doc) => {
+      lst.push({ ...doc.data(), id: doc.id });
+  });
+
+
+  if(lst.length > 0){
+    const bracketDocRef = doc(db, "Bracket", lst[0].Identifier)
+    if(isPosOneWinner){
+      let participantsObject = {
+        id: lst[0].participants[0].id,
+        resultText: lst[0].participants[0].resultText,
+        isWinner: true,
+        status: 'Played',
+        name: lst[0].participants[0].name,
+      }
+
+      await updateDoc(bracketDocRef, {
+        state: 'Done',
+        participants: [participantsObject, lst[0].participants[1]]
+      })
+    }else{
+      let participantsObject = {
+        id: lst[0].participants[1].id,
+        resultText: lst[0].participants[1].resultText,
+        isWinner: true,
+        status: 'Played',
+        name: lst[0].participants[1].name,
+      }
+
+      await updateDoc(bracketDocRef, {
+        state: 'Done',
+        participants: [lst[0].participants[0], participantsObject]
+      })
+    }
+  }
+}
+
+async function advanceToBracketItem(gameID, teamPos, teamID, teamName){
+  const bracketCollectionRef = collection(db, "Bracket");
+  const q = query(bracketCollectionRef, where("id", "==", gameID));
+  const querySnapshot = await getDocs(q);
+  let lst = [];
+
+  querySnapshot.forEach((doc) => {
+      lst.push({ ...doc.data(), id: doc.id });
+  });
+
+
+  if(lst.length > 0){
+    let participantsObject = {
+      id: teamID,
+      isWinner: false,
+      name: teamName,
+      resultText: lst[0].participants[teamPos-1].resultText,
+      status: null
+    }
+    const bracketDocRef = doc(db, "Bracket", lst[0].Identifier)
+    if(teamPos == 1){
+      await updateDoc(bracketDocRef, {
+        participants: [participantsObject, lst[0].participants[1]]
+      })
+    }
+
+    if(teamPos == 2){
+      await updateDoc(bracketDocRef, {
+        participants: [lst[0].participants[0], participantsObject]
+      })
     }
   }
 }
@@ -239,7 +336,7 @@ async function advanceTeamsFromGroup(group, teamData, teamIDs){
 
       let tgRef = collection(db, "TeamGame");
       await addDoc(tgRef, teamGameObj);
-
+      await advanceToBracketItem(group.NextGames[i*2], pos, teamIDs[i], teamData[i][0]);
     }else{
       console.log("Game already started");
     }
