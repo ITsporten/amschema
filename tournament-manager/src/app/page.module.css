@@ -31,6 +31,15 @@
   background-color: black;
 }
 
+.secondNavbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  padding: 1rem 0;
+  background-color: rgb(41, 40, 40);
+}
+
 .navbarText {
   color: #00b0f4;
   padding-right: 10px;
