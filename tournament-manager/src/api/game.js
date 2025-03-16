@@ -694,71 +694,75 @@ function breakGD1(indexList, goalMatrix){
   return subGroups;
 }
 
-function breakTies(indexList, winMatrix, goalMatrix){
-  //Antal vunna matcher -> Inbördes
-  //Målskillnad -> Inbördes
-  let newList = breakWon(indexList, winMatrix);
+function oneBreakIteration(indexList, matrix, breakFunction){
+  // Vad händer om två subgrupper och den ena blir mindre men inte den andra? 
+  // Första subgruppen ska börja om på första rankingkriteriet och andra subgruppen ska fortsätta på nästa
+  // Tror båda börjar om nu -> Är det ett problem?
   let winBreak = [];
-  for(let i = 0; i < newList.length; i++){
-    if(newList[i].length > 1){
-      let gdBroken = breakGD1(newList[i], goalMatrix);
+  for(let i = 0; i < indexList.length; i++){
+    if(indexList[i].length > 1){
+      let gdBroken = breakFunction(indexList[i], matrix);
       for(let j = 0; j < gdBroken.length; j++){
         winBreak.push(gdBroken[j]);
       }
     }else{
-      winBreak.push(newList[i]);
+      winBreak.push(indexList[i]);
     }
   };
-  //Målskillnad alla matcher
-  let winBreak2 = [];
-  for(let i = 0; i < winBreak.length; i++){
-    if(winBreak[i].length > 1){
-      let tmp = breakGD2(winBreak[i], goalMatrix);
-      for(let j = 0; j < tmp.length; j++){
-        winBreak2.push(tmp[j]);
+  return winBreak;
+}
+ 
+function breakTies(indexList, winMatrix, goalMatrix){
+  let breakers = [breakWon, breakGD1, breakGD2, breakGS1, breakGS2];
+  let matrixes = [winMatrix, goalMatrix, goalMatrix, goalMatrix, goalMatrix];
+  let cursor = 0;
+  let newIndicies = [];
+  let oldIndexList = []
+  oldIndexList.push(indexList)
+  
+  while(true){
+    newIndicies = oneBreakIteration(oldIndexList, matrixes[cursor], breakers[cursor]);
+    cursor++;
+
+    // Break if all teams are broken
+    if(checkAllBroken(newIndicies)){
+      break;
+    }
+
+    // Break if cursor is at the end
+    if(cursor == breakers.length){
+      break;
+    }
+
+    // Reset cursor if length is longer than before
+    if(newIndicies.length > oldIndexList.length){
+      cursor = 0;
+    }
+    oldIndexList = newIndicies;
+  }
+ 
+  let finalTeamPlacement = [];
+  for(let i = 0; i < newIndicies.length; i++){
+    if(newIndicies[i].length > 1){
+      for(let j = 0; j < newIndicies[i].length; j++){
+        finalTeamPlacement.push(newIndicies[i][j])
       }
     }else{
-      winBreak2.push(winBreak[i]);
-    }
+       finalTeamPlacement.push(newIndicies[i][0])
+     }
   }
   
-  //Gjorda mål -> Inbördes
-  let winBreak3 = [];
-  for(let i = 0; i < winBreak2.length; i++){
-    if(winBreak2[i].length > 1){
-      let tmp = breakGS1(winBreak2[i], goalMatrix);
-      for(let j = 0; j < tmp.length; j++){
-        winBreak3.push(tmp[j]);
-      }
-    }else{
-      winBreak3.push(winBreak2[i]);
-    }
-  }
-  //Gjorda mål alla matcher
-  let winBreak4 = [];
-  for(let i = 0; i < winBreak3.length; i++){
-    if(winBreak3[i].length > 1){
-      let tmp = breakGS2(winBreak3[i], goalMatrix);
-      for(let j = 0; j < tmp.length; j++){
-        winBreak4.push(tmp[j]);
-      }
-    }else{
-      winBreak4.push(winBreak3[i]);
-    }
-  }
-
-  let finalTeamPlacement = [];
-  for(let i = 0; i < winBreak4.length; i++){
-    if(winBreak4[i].length > 1){
-      for(let j = 0; j < winBreak4[i].length; j++){
-        finalTeamPlacement.push(winBreak4[i][j])
-      }
-    }else{
-      finalTeamPlacement.push(winBreak4[i][0])
-    }
-  }
-
   return finalTeamPlacement;
+}
+ 
+
+function checkAllBroken(indexList){
+  for(let i = 0; i < indexList.length; i++){
+    if(indexList[i].length > 1){
+      return false;
+    }
+  }
+  return true;
 }
 
 export async function finishGame(game, team1ID, team2ID){
