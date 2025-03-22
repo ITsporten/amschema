@@ -66,12 +66,14 @@ async function advanceTeams(game, team1ID, team2ID){
   let loserName = "";
   let winnerScore = 0;
   let loserScore = 0;
+  let isPosOneWinner = false;
 
   let scoreDiff = game.Team1Score - game.Team2Score;
   if(scoreDiff > 0){
     winnerId = team1ID;
     winnerName = game.Team1Name;
     winnerScore = game.Team1Score;
+    isPosOneWinner = true;
     loserId = team2ID;
     loserName = game.Team2Name;
     loserScore = game.Team2Score;
@@ -79,6 +81,7 @@ async function advanceTeams(game, team1ID, team2ID){
     winnerId = team2ID;
     winnerName = game.Team2Name;
     winnerScore = game.Team2Score;
+    isPosOneWinner = false;
     loserId = team1ID;
     loserName = game.Team1Name;
     loserScore = game.Team1Score;
@@ -143,7 +146,6 @@ async function advanceTeams(game, team1ID, team2ID){
       let teamName = winnerName;
       let isWinner = true;
       let bracketItemID = game.id;
-      let isPosOneWinner = teamPos == 1 ? true : false;
 
       await advanceToBracketItem(gameID, teamPos, teamID, teamName, isWinner);
       await updatePlayedBracketItem(bracketItemID, isPosOneWinner);
@@ -205,7 +207,6 @@ async function advanceTeams(game, team1ID, team2ID){
         let teamID   = loserId;
         let teamName = loserName;
         let bracketItemID = game.id;
-        let isPosOneWinner = teamPos == 1 ? true : false;
 
         await advanceToBracketItem(gameID, teamPos, teamID, teamName);
         await updatePlayedBracketItem(bracketItemID, isPosOneWinner);
