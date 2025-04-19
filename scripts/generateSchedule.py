@@ -2,6 +2,7 @@ import openpyxl
 import firebase_admin
 from firebase_admin import credentials, firestore
 from datetime import datetime, timezone, timedelta
+from generateBracket import BracketGenerator
 
 
 def delete_collection(coll_ref):
@@ -316,12 +317,14 @@ def deleteDBDocuments(db):
     groupRef = db.collection('Groups')
     gtRef = db.collection('GroupTeams')
     tgRef = db.collection('TeamGame')
+    bracketRef = db.collection('Bracket')
 
     delete_collection(gameRef)
     delete_collection(teamRef)
     delete_collection(groupRef)
     delete_collection(gtRef)
     delete_collection(tgRef)
+    delete_collection(bracketRef)
     
 cred_path = './service_key.json'
 
@@ -341,3 +344,8 @@ date = ws2['A1'].value
 
 qf = generate_bracket_games(db, wb, date)
 generateAllGroups(db, wb, date, qf)
+
+bg = BracketGenerator(cred_path)
+bg.dbHandler.db = db
+bg.generateBracket()
+
