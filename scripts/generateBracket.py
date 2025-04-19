@@ -105,8 +105,3 @@ class BracketGenerator:
 
         for bracketItem in self.bracketItems:
             self.dbHandler.uploadBracket(bracketItem)
-
-if __name__ == "__main__":
-    bracketGen = BracketGenerator('./service_key.json')
-    bracketGen.connect()
-    bracketGen.generateBracket()
