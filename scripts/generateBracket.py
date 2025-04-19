@@ -96,7 +96,7 @@ class BracketGenerator:
         return tournamentRoundText
 
     def generateBracket(self):
-        bracketGen.getBracketGameObjects()
+        self.getBracketGameObjects()
 
         for gameObj in self.bracketGameObjects:
             tournamentRoundText = self._translateNameToRoundText(gameObj)
