@@ -16,6 +16,8 @@ def deleteDBDocuments(db):
 
 def createStandingItem(db, ws, col, row, seasonName):
     name = ws[col+str(row)].value
+    name = name.strip()
+    
     col = ord(col)
 
     points = []
