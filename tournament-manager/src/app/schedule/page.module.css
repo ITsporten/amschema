@@ -243,6 +243,7 @@
 
 .gameFieldBox {
     width: 150px;
+    height: 44px;
     background-color: #44baff;
     padding: 4%;
     text-align: right;
