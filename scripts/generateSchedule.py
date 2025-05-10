@@ -298,6 +298,8 @@ def generateGroup(db, wb, col, teamRow, gameRow, groupName, nextGames, date):
     groupRef = db.collection("Groups").document(groupID)
     groupRef.update({'GameIDs': gameIDs})
 
+    return teams
+
 def generateAllGroups(db, wb, date, qf):
     groupNames = ['A', 'B', 'C', 'D']
     columns = ['B', 'F', 'J', 'N']
@@ -307,9 +309,13 @@ def generateAllGroups(db, wb, date, qf):
                  [qf[1], 2, qf[0], 2],
                  [qf[2], 1, qf[3], 1],
                  [qf[3], 2, qf[2], 2]]
+    
+    teams = []
 
     for i in range(len(groupNames)):
-        generateGroup(db, wb, columns[i], teamRow, gameRow, groupNames[i], nextGames[i], date)
+        teams += generateGroup(db, wb, columns[i], teamRow, gameRow, groupNames[i], nextGames[i], date)
+    
+    return teams
 
 def deleteDBDocuments(db):
     gameRef = db.collection('Games')
@@ -325,27 +331,79 @@ def deleteDBDocuments(db):
     delete_collection(gtRef)
     delete_collection(tgRef)
     delete_collection(bracketRef)
+
+def uploadMetadata(db, teams):
+    metadata = {
+        'CurrentStandingsReported': False,
+        'Cursor': 0,
+    }
+
+    doc_ref = db.collection('Metadata').document('metadata')
+    doc = doc_ref.get()
+
+    if doc.exists:
+        d = doc.to_dict()
+
+        if(d['Cursor'] == 3 and d['CurrentStandingsReported'] == True):
+            # Remove standings and generate new with new season
+            currentYear = (datetime.now().year) - 2000
+            season = f"ÅM {currentYear.__str__()}/{(currentYear+1).__str__()}"
+ 
+            standingsRef = db.collection('Standings')
+            delete_collection(standingsRef)
+            generateNewSeasonStandings(season, teams)
+
+        if d['CurrentStandingsReported']:
+            newCursor = (d['Cursor'] + 1) % 4
+            metadata = {
+                'CurrentStandingsReported': False,
+                'Cursor': newCursor,
+            }
+            # Update the document if it exists
+            doc_ref.update(metadata)
+
+    else:
+        # Create a new document if it doesn't exist
+        doc_ref.set(metadata)
+
+def generateNewSeasonStandings(season, teams):
+    for team in teams:
+        teamName = team.strip()
+        points = [0, 0, 0, 0]
+        totalPoints = 0
+        standingItem = {
+            'TeamName': teamName,
+            'Points': points,
+            'TotalPoints': totalPoints,
+            'Season': season
+        }
+        db.collection('Standings').add(standingItem)
+
     
-cred_path = './service_key.json'
+if __name__ == "__main__":
+    cred_path = './service_key.json'
 
-# Use the application default credentials
-cred = credentials.Certificate(cred_path)
+    # Use the application default credentials
+    cred = credentials.Certificate(cred_path)
 
-# Initialize the Firestore client
-firebase_admin.initialize_app(cred)
-db = firestore.client()
+    # Initialize the Firestore client
+    firebase_admin.initialize_app(cred)
+    db = firestore.client()
 
-deleteDBDocuments(db)
+    deleteDBDocuments(db)
 
-wb = openpyxl.load_workbook('./datasheets/schedule.xlsx', data_only=True)
+    wb = openpyxl.load_workbook('./datasheets/schedule.xlsx', data_only=True)
 
-ws2 = wb['Gruppspel']
-date = ws2['A1'].value
+    ws2 = wb['Gruppspel']
+    date = ws2['A1'].value
 
-qf = generate_bracket_games(db, wb, date)
-generateAllGroups(db, wb, date, qf)
+    qf = generate_bracket_games(db, wb, date)
+    teams = generateAllGroups(db, wb, date, qf)
+    
 
-bg = BracketGenerator(cred_path)
-bg.dbHandler.db = db
-bg.generateBracket()
+    bg = BracketGenerator(cred_path)
+    bg.dbHandler.db = db
+    bg.generateBracket()
+
+    uploadMetadata(db, teams)
 
