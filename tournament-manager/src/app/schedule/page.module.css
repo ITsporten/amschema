@@ -131,6 +131,7 @@
 }
 
 .InfoBarLeft{
+    height: 28.2px;
     background-color: #fb8a2d;
     border-bottom-left-radius: 10px;
     justify-content: center;
