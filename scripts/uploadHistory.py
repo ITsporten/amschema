@@ -15,7 +15,7 @@ def deleteDBDocuments(db):
     delete_collection(historyRef)
 
 def createHistoryItem(db, ws, col, row):
-    season = ws[col+str(row)].value
+    season = (ws[col+str(row)].value).strip()
     col = ord(col)
 
     points = []

@@ -432,24 +432,24 @@ async function updateStandings(teamToPoints){
   const standingsRef = collection(db, "Standings");
   //Get all standings
   let standings = [];
-  res = await getDocs(standingsRef);
+  let res = await getDocs(standingsRef);
   res.forEach((doc) => {
     standings.push({...doc.data(), id: doc.id})
   });
 
   let cursor = await getMetadata();
-  if(cursor == false){
+  if(cursor === false){
     return;
   }
 
   for(let i in teamToPoints){
     let teamReported = false;
-    let teamName = i.toLowerCase();
+    let teamName = i.toLowerCase().trim();
     let teamPoints = teamToPoints[i];
 
     for(let j in standings){
       let existingTeamRecrod = standings[j];
-      let existingTeamName = existingTeamRecrod.TeamName.toLowerCase();
+      let existingTeamName = existingTeamRecrod.TeamName.toLowerCase().trim();
       
       if(existingTeamName == teamName){
         // Update record
@@ -473,7 +473,7 @@ async function updateStandings(teamToPoints){
       let totalPoints = points.reduce((a, b) => a + b, 0);
 
       let newRecord = {
-        TeamName: i,
+        TeamName: i.trim(),
         Points: points,
         Season: standings[0].Season,
         TotalPoints: totalPoints,

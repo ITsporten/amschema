@@ -335,7 +335,7 @@ def deleteDBDocuments(db):
 def uploadMetadata(db, teams):
     metadata = {
         'CurrentStandingsReported': False,
-        'Cursor': 3,
+        'Cursor': 0,
     }
 
     doc_ref = db.collection('Metadata').document('metadata')

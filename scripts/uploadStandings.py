@@ -63,5 +63,5 @@ if __name__ == "__main__":
 
     deleteDBDocuments(db)
 
-    seasonName = ws['B4'].value
+    seasonName = (ws['B4'].value).strip()
     createAllStandings(db, ws, 'D', 4, seasonName)
