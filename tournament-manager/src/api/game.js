@@ -2,6 +2,15 @@ import { collection, getDocs, addDoc, getDoc, updateDoc, doc, query, where, dele
 import { db } from "../app/firebase-config";
 import TeamsList from "@/components/TeamsList";
 
+let points = {
+  "1": 10,
+  "2": 8,
+  "3": 6,
+  "4": 5,
+  "5-8": 3,
+  "Gr3" : 2,
+  "Gr4-5" : 1
+}
 
 export async function createGame(gamesCollectionRef, team1name, team1id, team2name, team2id, datetime, field, division, gamename){
   let game = 
@@ -213,6 +222,277 @@ async function advanceTeams(game, team1ID, team2ID){
         }
     }
   }
+
+  handleStandingsUpdate();
+}
+
+async function handleStandingsUpdate(){
+  // If all games done, update standings
+  const gamesCollectionRef = collection(db, "Games");
+  // Get all games
+  let allGames = [];
+  let res = await getDocs(gamesCollectionRef);
+  res.forEach((doc) => {
+    allGames.push({...doc.data(), id: doc.id})
+  });
+  let allFinished = true;
+  allGames.forEach((game) => {
+    if(game.Status != 2){
+      allFinished = false;
+    }
+  });
+
+  if (allFinished){
+    // Get all groupteams
+    let groupTeams = [];
+    const groupTeamsRef = collection(db, "GroupTeams");
+    res = await getDocs(groupTeamsRef);
+    res.forEach((doc) => {
+      groupTeams.push({...doc.data(), id: doc.id})
+    });
+    
+    let teamToPoints = {};
+
+    processGroupResults(teamToPoints, groupTeams, points["Gr3"], points["Gr4-5"], points["Gr4-5"]);
+
+    // get all groups
+    let groups = [];
+    const groupsRef = collection(db, "Groups");
+    res = await getDocs(groupsRef);
+    res.forEach((doc) => {
+      groups.push({...doc.data(), id: doc.id})
+    });
+
+    // Get all quarterfinals
+    let quarterfinals = [];
+    for(let i in groups){
+      quarterfinals.push(groups[i].NextGames[0]);
+      quarterfinals.push(groups[i].NextGames[2]);
+    }
+
+    let semifinals = [];
+    // Process quarterfinals
+    processResults(teamToPoints, quarterfinals, allGames, -1, points["5-8"], semifinals, []);
+
+    let final = [];
+    let bronze = [];
+    // Process semifinals
+    // Get final and bronze ids
+    processResults(teamToPoints, semifinals, allGames, -1, -1, final, bronze);
+
+    // Process final
+    processResults(teamToPoints, final, allGames, points["1"], points["2"], [], []);
+    // Process bronze
+    processResults(teamToPoints, bronze, allGames, points["3"], points["4"], [], []);
+
+    console.log(teamToPoints);
+    
+    // Update standings
+    await updateStandings(teamToPoints);
+  }
+}
+
+async function updateHistory(teamToPoints){
+  // Get top three teams with highest total points
+  let standingsRef = collection(db, "Standings");
+  let standings = [];
+  let res = await getDocs(standingsRef);
+  res.forEach((doc) => {
+    standings.push({...doc.data(), id: doc.id})
+  });
+  standings.sort((a, b) => {
+    return b.TotalPoints - a.TotalPoints;
+  });
+  let topThree = standings.slice(0, 3);
+
+  let season = standings[0].Season;
+  let teamNames = [];
+  let placements = [];
+  let plt = 1;
+  let lastPoints = topThree[0].TotalPoints;
+  let points = [];
+
+  for (let i in topThree){
+    teamNames.push(topThree[i].TeamName);
+    points.push(topThree[i].TotalPoints);
+
+    if(lastPoints == topThree[i].TotalPoints){
+      placements.push(plt);
+    }
+    else{
+      plt++;
+      placements.push(plt);
+      lastPoints = topThree[i].TotalPoints;
+    }
+  }
+
+  let historyRef = collection(db, "History");
+  let history = {
+    Season: season,
+    TeamName: teamNames,
+    Placements: placements,
+    Points: points,
+  };
+
+  // Check if season already exists
+  const q = query(historyRef, where("Season", "==", season));
+  const querySnapshot = await getDocs(q);
+  let lst = [];
+  querySnapshot.forEach((doc) => {
+      lst.push({ ...doc.data(), id: doc.id });
+  });
+  if(lst.length > 0){
+    // Update existing season
+    const historyDocRef = doc(db, "History", lst[0].id);
+    await updateDoc(historyDocRef, {
+      TeamName: teamNames,
+      Placements: placements,
+      Points: points,
+    });
+  }
+  else{
+    // Create new season
+    await addDoc(historyRef, history);
+  }
+
+}
+
+function processGroupResults(result, groupTeams, pointsThirdPlace, pointsFourthPlace, pointsFifthPlace){
+  for(let i in groupTeams){
+    if(groupTeams[i].TeamData[6] == "3"){
+      let teamName = (groupTeams[i].TeamData[0]);
+      result[teamName] = pointsThirdPlace;
+    }else if(groupTeams[i].TeamData[6] == "4"){
+      let teamName = (groupTeams[i].TeamData[0]);
+      result[teamName] = pointsFourthPlace; 
+    }else if(groupTeams[i].TeamData[6] == "5"){
+      let teamName = (groupTeams[i].TeamData[0]);
+      result[teamName] = pointsFifthPlace;
+    }
+  }
+}
+
+function processResults(result, gameIDs, allGames, 
+                        winnerPoints, loserPoints, winnerAdv, loserAdv)
+{
+  for(let i in gameIDs){
+    for(let j in allGames){
+      if(allGames[j].id == gameIDs[i]){
+        let game = allGames[j];
+        let team1Name = game.Team1Name;
+        let team2Name = game.Team2Name;
+        let team1Score = game.Team1Score;
+        let team2Score = game.Team2Score;
+        let winnerName = "";
+        let loserName = "";
+
+        if(team1Score > team2Score){
+          winnerName = team1Name;
+          loserName = team2Name;
+        }else if(team1Score < team2Score){
+          winnerName = team2Name;
+          loserName = team1Name;
+        }
+
+        if(winnerPoints != -1){
+          result[winnerName] = winnerPoints;
+        }
+
+        if(loserPoints != -1){
+          result[loserName] = loserPoints;
+        }
+
+        if(game.WNextGame.length > 0){
+          winnerAdv.push(game.WNextGame[0]);
+        }
+        if(game.LNextGame.length > 0){
+          loserAdv.push(game.LNextGame[0]);
+        }
+      }
+    }
+  }
+}
+
+async function getMetadata(){
+  // Get metadata
+  const metadataRef = doc(db, "Metadata", "metadata");
+  const metadataRes = await getDoc(metadataRef);
+  let metadata = {...metadataRes.data(), id: metadataRes.id}
+
+  let cursor = metadata.Cursor;
+  
+  if(cursor < 0 || cursor > 3){
+    console.log("Invalid cursor");
+    return false;
+  }
+  return cursor;
+}
+
+async function updateStandings(teamToPoints){
+  const standingsRef = collection(db, "Standings");
+  //Get all standings
+  let standings = [];
+  res = await getDocs(standingsRef);
+  res.forEach((doc) => {
+    standings.push({...doc.data(), id: doc.id})
+  });
+
+  let cursor = await getMetadata();
+  if(cursor == false){
+    return;
+  }
+
+  for(let i in teamToPoints){
+    let teamReported = false;
+    let teamName = i.toLowerCase();
+    let teamPoints = teamToPoints[i];
+
+    for(let j in standings){
+      let existingTeamRecrod = standings[j];
+      let existingTeamName = existingTeamRecrod.TeamName.toLowerCase();
+      
+      if(existingTeamName == teamName){
+        // Update record
+        let points = existingTeamRecrod.Points;
+        points[cursor] = teamPoints;
+        let totalPoints = points.reduce((a, b) => a + b, 0);
+        let standingsDocRef = doc(db, "Standings", existingTeamRecrod.id);
+
+        await updateDoc(standingsDocRef, {
+          Points: points,
+          TotalPoints: totalPoints,
+        })
+        teamReported = true;
+        break;
+      }
+    }
+    if (!teamReported){
+      // Create new record
+      let points = [0, 0, 0, 0]
+      points[cursor] = teamPoints;
+      let totalPoints = points.reduce((a, b) => a + b, 0);
+
+      let newRecord = {
+        TeamName: i,
+        Points: points,
+        Season: standings[0].Season,
+        TotalPoints: totalPoints,
+      }
+      await addDoc(standingsRef, newRecord);
+    }
+  }
+
+  if(cursor == 3){
+    // Update history
+    await updateHistory(teamToPoints);
+  }
+
+  // Update seasonReported to true
+  const metadataRef = doc(db, "Metadata", "metadata");
+  await updateDoc(metadataRef, {
+    CurrentStandingsReported: true,
+  });
+
 }
 
 async function updatePlayedBracketItem(bracketItemID, isPosOneWinner){
