@@ -5,6 +5,7 @@ import { db } from '../firebase-config'
 import { doc, getDoc, collection, query, getDocs, where, documentId} from 'firebase/firestore'
 import { useState, useEffect } from 'react'
 import { SingleEliminationBracket, createTheme, DoubleEliminationBracket, Match, MATCH_STATES, SVGViewer } from '@jteglund/jt-tournament-brackets'
+import {getTimeStringBracket} from '../../api/game.js'
 
 
 export const WhiteTheme = createTheme({
@@ -76,12 +77,26 @@ export default function Home({params}) {
     useEffect(() => {
         const getBracket = async () => {
             let lst = []
+            let gameIDs = []
+            let idToIdxMap = {}
+
             const querySnapshot = await getDocs(bracketRef);
+            let idx = 0;
             querySnapshot.forEach((doc) => {
               // doc.data() is never undefined for query doc snapshots
               lst.push(doc.data());
+              gameIDs.push(doc.data().id);
+              idToIdxMap[doc.data().id] = idx;
+              idx++;
             });
             
+            const gameRef = collection(db, "Games");
+            const q = query(gameRef, where(documentId(), 'in', gameIDs));
+            const gameSnapshot = await getDocs(q);
+            gameSnapshot.forEach((doc) => {
+                let idx = idToIdxMap[doc.id];
+                lst[idx].startTime = getTimeStringBracket(doc.data());
+            });
             setBracket(lst);
         }
         getBracket();

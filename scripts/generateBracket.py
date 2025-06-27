@@ -65,7 +65,6 @@ class BracketGenerator:
 
     def createBracketItem(self, gameObject, tournamentRoundText):
             participants      = self._getParticipants(gameObject)
-            startTime         = self._getStartTime(gameObject)
             nextMatchID       = gameObject['WNextGame'][0] if len(gameObject['WNextGame']) > 0 else None
             nextLooserMatchID = gameObject['LNextGame'][0] if len(gameObject['LNextGame']) > 0 else None
             isThirdPlaceMatch = True if gameObject['GameName'] == 'BRONS' else False
@@ -78,7 +77,6 @@ class BracketGenerator:
                 'name': gameObject['GameName'],
                 'nextMatchId': nextMatchID,
                 'tournamentRoundText': tournamentRoundText,
-                'startTime': startTime,
                 'state': None,
                 'participants': participants
             }
