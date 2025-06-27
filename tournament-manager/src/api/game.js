@@ -1059,7 +1059,6 @@ export async function finishGame(game, team1ID, team2ID){
 export function getTimeStringBracket(game){
   let dateTime = game.DateTime;
   let time = convertMinutesToDate(dateTime);
-  console.log(time[4])
   let timeString = time[4] + "-" + time[3] + "-" + time[2] + " - " + time[0] + ":" + time[1];
   return timeString;
 }
