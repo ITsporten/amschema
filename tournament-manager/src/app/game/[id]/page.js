@@ -28,7 +28,7 @@ export default function Home({params}) {
     const [team2ID, setTeam2ID] = useState(null);
 
     const dateTimeConverter = (minutes) => {
-        let dateTime = convertMinutesToDate(minutes);
+        let dateTime = convertMinutesToDate(minutes, true);
         setTime(dateTime[0] + ":" + dateTime[1]);
         setDay(dateTime[2]);
         setMonth(dateTime[3])

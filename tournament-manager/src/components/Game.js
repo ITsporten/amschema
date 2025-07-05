@@ -8,7 +8,7 @@ export default function GameListItem({game, clickable}) {
     const [dateTime, setDateTime] = useState([]);
 
     useEffect(() => {
-        setDateTime(convertMinutesToDate(game.DateTime))
+        setDateTime(convertMinutesToDate(game.DateTime, true))
     }, [])
     
     return (
