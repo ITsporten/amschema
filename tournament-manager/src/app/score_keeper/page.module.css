@@ -23,11 +23,19 @@
 }
 
 .teamScore {
-  display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
   padding: 1rem 0;
+  text-align: center;
+  width: 400px;
+}
+
+.teamScoreHorizontal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
   width: 400px;
 }
 
@@ -50,4 +58,25 @@
   color: white;
   margin-left: 5%;
   margin-right: 5%;
+  text-align: center;
+}
+
+.teamNameContainer {
+  justify-content: center;
+  align-items: center;
+  margin-left: 100px;
+  padding: 5px;
+  width: 200px;
+  background-color: #149CE9;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.finishGameContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  padding: 1rem 0;
+  width: 400px;
 }

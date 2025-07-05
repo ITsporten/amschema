@@ -11,6 +11,7 @@ import FinishGamePopup from '@/components/game/FinishGamePopup'
 import { useRouter } from 'next/navigation'
 import { finishGame } from '@/api/game'
 import { FadeLoader } from 'react-spinners'
+import ScoreReportingContainer from "@/components/game/ScoreReportingContainer";
 
 export default function Home({params}) {
     const [gameName, setGameName] = useState(params.gameName)
@@ -231,24 +232,16 @@ export default function Home({params}) {
                 </>
             }
             { loggedIn && game && popup === 0 &&
-                <div>
+                <div >
                     <GameListItem game={game} />
-                    <div>
+                    <div >
                     { game.Status === 1 ?
                         <>
-                            <div className={styles.teamScore}>
+                            <div className={styles.finishGameContainer}>
                                 <StatusButton prompt={"Finish game"} handlePress={openPopup} status={game.Status}/> 
                             </div>
-                            <div className={styles.teamScore}>
-                                <ScoreButton prompt={"-"} handlePress={handleReduceScore} team={1}/>
-                                <h3 className={styles.TeamText}>{game.Team1Name}</h3>
-                                <ScoreButton prompt={"+"} handlePress={handleAddScore} team={1}/>
-                            </div>
-                            <div className={styles.teamScore}>
-                                <ScoreButton prompt={"-"} handlePress={handleReduceScore} team={2}/>
-                                <h3 className={styles.TeamText}>{game.Team2Name}</h3>
-                                <ScoreButton prompt={"+"} handlePress={handleAddScore} team={2}/>
-                            </div>
+                            <ScoreReportingContainer teamName={game.Team1Name} handleReduceScore={handleReduceScore} handleAddScore={handleAddScore} team={1}/>
+                            <ScoreReportingContainer teamName={game.Team2Name} handleReduceScore={handleReduceScore} handleAddScore={handleAddScore} team={2}/>
                             { game && tieError === 1 &&
                                 <h4>ERROR: You cannot end a game as a tie</h4>
                             }

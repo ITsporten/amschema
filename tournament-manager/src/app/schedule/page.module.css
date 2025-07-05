@@ -271,8 +271,7 @@
 }
 
 .ScoreButton {
-    width: 75px;
-    border-radius: 10px;
+    width: 100px;
     text-align: center;
     cursor: pointer;
 }
