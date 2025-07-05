@@ -40,7 +40,7 @@ function convertDateToMinutes(day, hour, minute){
   return days*1440 + parseInt(hour)*60 + parseInt(minute);
 }
 
-export function convertMinutesToDate(dateTime){
+export function convertMinutesToDate(dateTime, monthAsText = false){
   let monthMap = {
     0: "Jan",
     1: "Feb",
@@ -60,7 +60,7 @@ export function convertMinutesToDate(dateTime){
   let hour = date.getHours();
   let minutes = date.getMinutes();
   let day = date.getDate();
-  let month = monthMap[date.getMonth()];
+  let month = monthAsText ? monthMap[date.getMonth()] : (date.getMonth() + 1).toString();
   if(minutes < 10){
     minutes = "0" + minutes.toString()
   }
@@ -1058,7 +1058,7 @@ export async function finishGame(game, team1ID, team2ID){
 
 export function getTimeStringBracket(game){
   let dateTime = game.DateTime;
-  let time = convertMinutesToDate(dateTime);
+  let time = convertMinutesToDate(dateTime, false);
   let timeString = time[4] + "-" + time[3] + "-" + time[2] + " - " + time[0] + ":" + time[1];
   return timeString;
 }
