@@ -626,17 +626,31 @@ async function advanceTeamsFromGroup(group, teamData, teamIDs){
 }
 
 async function reCalculateGroup(game){
-  //Ta fram gruppnamn från game.GameName
-  let gamename = game.GameName.replace(/[0-9]/g, '');
-  //Dra ner gruppen
-  const q = query(collection(db, "Groups"), where("GroupName", "==", gamename));
-  const querySnapshot = await getDocs(q);
+  let gameId = game.Identifier;
+  let groupCollection = collection(db, "Groups");
+  let groups = await getDocs(groupCollection);
+  let allGroups = []
+
+  groups.forEach((doc) => {
+    allGroups.push({...doc.data(), id: doc.id})
+  });  
+
   let groupObj = null;
 
-  querySnapshot.forEach((doc) => {
-    // doc.data() is never undefined for query doc snapshots
-    groupObj = {...doc.data(), id: doc.id}
-  });
+  // Find gameId in groups and extract group object
+  for(let i = 0; i < allGroups.length; i++)
+  {
+    if(allGroups[i].GameIDs.includes(gameId))
+    {
+      groupObj = allGroups[i];
+      break
+    }
+  }
+
+  if(groupObj == null){
+    console.log("ERROR: Group not found")
+    return;
+  }
   //Dra ner alla matcher i gruppen
   let allGames = [];
   const gamesCollectionRef = collection(db, "Games");

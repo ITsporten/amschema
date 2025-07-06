@@ -3,6 +3,7 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 from datetime import datetime, timezone, timedelta
 from generateBracket import BracketGenerator
+import uuid
 
 
 def delete_collection(coll_ref):
@@ -15,7 +16,9 @@ def delete_collection(coll_ref):
 
 
 def createGame(db, gameName, gameTime, field, _type, WNextGame, LNextGame, team1Name, team2Name):
+    gameID = str(uuid.uuid4())
     gameObject = {
+        'Identifier': gameID,
         'GameName': gameName,
         'Team1Score': 0,
         'Team2Score': 0,
@@ -29,9 +32,10 @@ def createGame(db, gameName, gameTime, field, _type, WNextGame, LNextGame, team1
         'Team1Name': team1Name,
         'Team2Name': team2Name,
     }
-    doc_ref = db.collection('Games').add(gameObject)
+    doc_ref = db.collection('Games').document(gameID)
+    doc_ref.set(gameObject)
 
-    return doc_ref[1].id
+    return gameID
 
 def generateDateTime(year, month, day, hours, minutes):
     dateTime = datetime(year, month, day, hours, minutes)
@@ -203,30 +207,38 @@ def createTeams(db, teamList):
 
     #Skapa lag (Spara map namn till ID)
     for t in teamList:
+        teamID = str(uuid.uuid4())
         team = {
+            'Identifier': teamID,
             'TeamName': t
         }
-        doc_ref = db.collection('Teams').add(team)
-        teamIDmap[t] = doc_ref[1].id
+        doc_ref = db.collection('Teams').document(teamID)
+        doc_ref.set(team)
+        teamIDmap[t] = teamID
     
     return teamIDmap
 
 def createGroup(db, groupName, nextGames):
+    groupID = str(uuid.uuid4())
     group = {
+        'Identifier': groupID,
         'GroupName': groupName,
         'NextGames': nextGames,
         'GameIDs': [],
     }
 
-    doc_ref = db.collection('Groups').add(group)
-    return doc_ref[1].id 
+    doc_ref = db.collection('Groups').document(groupID)
+    doc_ref.set(group)
+    return groupID
 
 def createGroupTeams(db, teams, teamIDmap, groupID, groupName):
     count = 1
     for t in teams:
+        gtID = str(uuid.uuid4())
         teamData = [t, 0, 0, 0, 0, 0, count]
 
         groupTeam = {
+            'Identifier': gtID,
             'TeamID': teamIDmap[t],
             'GroupID': groupID,
             'TeamData': teamData,
@@ -234,16 +246,20 @@ def createGroupTeams(db, teams, teamIDmap, groupID, groupName):
         }
 
         count += 1
-        db.collection('GroupTeams').add(groupTeam)
+        doc_ref = db.collection('GroupTeams').document(gtID)
+        doc_ref.set(groupTeam)
 
 def createTeamGame(db, teamID, gameID, position):
+    tgID = str(uuid.uuid4())
     teamGame = {
+        'Identifier': tgID,
         'TeamID': teamID,
         'GameID': gameID,
         'TeamPosition': position,
     }
 
-    db.collection('TeamGame').add(teamGame)
+    doc_ref = db.collection('TeamGame').document(tgID)
+    doc_ref.set(teamGame)
 
 def generateGroupGames(db, wb, col, gameRow, groupName, date, teamIDmap):
     ws = wb['Gruppspel']
