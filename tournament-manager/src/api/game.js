@@ -1009,7 +1009,8 @@ function oneBreakIteration(indexList, matrix, breakFunction){
 }
  
 function breakTies(indexList, winMatrix, goalMatrix){
-  let breakers = [breakWon, breakGD1, breakGD2, breakGS1, breakGS2];
+  // breakWon = Inbördes möten, breakGD2 = total målskillnad, breakGD1 = inbördes målskillnad, breadGS1 = inbördes antal gjorda mål, breakGS2 = totalt antal mål
+  let breakers = [breakWon, breakGD2, breakGD1, breakGS1, breakGS2];
   let matrixes = [winMatrix, goalMatrix, goalMatrix, goalMatrix, goalMatrix];
   let cursor = 0;
   let newIndicies = [];
